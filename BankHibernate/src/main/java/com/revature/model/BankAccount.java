@@ -1,11 +1,6 @@
 package com.revature.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name="BANK_ACCOUNT")
@@ -13,6 +8,7 @@ public class BankAccount {
 	
 	@Id
 	@Column(name="BA_ID")
+	@GeneratedValue
 	private int baNumber;
 	
 	@Column(name="BA_BALANCE")
@@ -33,7 +29,6 @@ public class BankAccount {
 	 */
 	
 	public BankAccount(){
-		this.baNumber=2;
 	}
 
 	public int getBaNumber() {

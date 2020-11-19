@@ -21,6 +21,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="BANK_USER")
+
 public class BankUser implements Serializable{
 
 	/**

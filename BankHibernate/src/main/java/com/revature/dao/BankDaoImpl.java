@@ -52,13 +52,12 @@ public class BankDaoImpl implements Dao{
 		//	The benefit of an object being in the persistent state,
 		//	Hibernate will compare the Java Object to the Table Record and update the table record
 		//	if the two don't match
-		user.setFirstName("I HAVE CHANGED!");
 		
 		//commit
 		tx.commit();
 		
-		session.close(); //now the user pojo has lost the connection and is considered detached
-		System.out.println(user);
+		HibernateConnectionUtil.closeSession(); //now the user pojo has lost the connection and is considered detached
+
 	}
 
 	public BankAccount getBankAccountById(BankAccount account) {
@@ -67,9 +66,18 @@ public class BankDaoImpl implements Dao{
 		
 		BankAccount returnedAccount = (BankAccount) session.get(BankAccount.class, account.getBaNumber());
 			System.out.println(returnedAccount);
-		session.close();
+		HibernateConnectionUtil.closeSession();
 		
 		return returnedAccount;
+	}
+
+	public void createAccount(BankAccount account){
+		Session session = HibernateConnectionUtil.getSession();
+		Transaction tx = session.beginTransaction();
+		session.save(account);
+		tx.commit();
+		HibernateConnectionUtil.closeSession();
+
 	}
 
 	public BankUser getBankUserByGetOrLoad() {
@@ -118,18 +126,17 @@ public class BankDaoImpl implements Dao{
 		 
 		return userList;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+	@Override
+	public List<BankAccount> getAccountsByUser(BankUser bankUser) {
+		Session ses = HibernateConnectionUtil.getSession();
+		Criteria crit = ses.createCriteria(BankAccount.class);
+		crit.add(Restrictions.ilike("bankUser",bankUser));
+		List<BankAccount> bankAccountList = crit.list();
+		return bankAccountList;
+	}
+
+
 	public BankUser updateVsMerge() {
 		BankUser john = new BankUser(2,"john1", "123", "jupdate", "jj");
 		BankUser john2 = new BankUser(2,"john2", "123", "jmerge", "jj");
@@ -165,13 +172,23 @@ public class BankDaoImpl implements Dao{
 
 		return null;
 	}
+
+	@Override
+	public void removeUser(BankUser user) {
+		Session ses = HibernateConnectionUtil.getSession();
+		Transaction tx = ses.beginTransaction();
+		for (BankAccount ba:
+			 getAccountsByUser(user)) {
+			removeAccount(ba); 
+		}
+		ses.delete(user);
+		tx.commit();
+	}
 	
-public static void main(String[] args) {
-//	new BankDaoImpl().updateVsMerge();
-	new BankDaoImpl().getBankAccountById(new BankAccount());
-	
-	List<BankUser> bankUsers = new BankDaoImpl().getBankUsersByUsingCriteria();
-	System.out.println(bankUsers);
-}
+	public void removeAccount(BankAccount ba){
+		Session ses = HibernateConnectionUtil.getSession(); 
+		ses.delete(ba);
+	}
+
 
 }

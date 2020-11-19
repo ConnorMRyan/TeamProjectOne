@@ -29,14 +29,15 @@ public class MainClass {
 		// to persist objects to your database.
 		//----------------------------------------------------------
 		
-		hibernateReadExample();
+		hibernateCreateExample();
 		hibernateReadAccount();
-		getVsLoad();
+		hibernateReadAccount();
+
 	}
 	
 	
 	public static void hibernateReadExample(){
-		System.out.println("hello world");
+
 		
 		//Instantiate a Hibernate Dao
 		Dao dao = new BankDaoImpl();
@@ -78,6 +79,16 @@ public class MainClass {
 				
 		dao.createUser(user);
 		System.out.println("done saving user to db");
+
+		BankAccount account = new BankAccount();
+		account.setBankUser(user);
+		account.setBaBalance(1000.00);
+		BankAccount account2 = new BankAccount();
+		account2.setBankUser(user);
+		account2.setBaBalance(1500.00);
+		dao.createAccount(account);
+		dao.createAccount(account2);
+
 	}
 	
 	public static void getVsLoad(){
